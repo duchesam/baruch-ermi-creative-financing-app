@@ -10,7 +10,7 @@ import { PrintableDealSheet } from './components/PrintableDealSheet';
 import { DealInputs } from './types/deal';
 import { calculateDeal } from './utils/calculator';
 import { PRESET_DEALS } from './data/presets';
-import { Sparkles, ArrowDown, HelpCircle, Shield, Check } from 'lucide-react';
+import { Sparkles, ArrowDown, HelpCircle, Shield, Check, AlertTriangle } from 'lucide-react';
 
 const INITIAL_DEAL: DealInputs = {
   propertyAddress: '1428 Elmwood Court, Charlotte, NC 28205',
@@ -55,30 +55,30 @@ const BLANK_DEAL: DealInputs = {
 export default function App() {
   const [inputs, setInputs] = useState<DealInputs>(INITIAL_DEAL);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{ message: string; isError?: boolean } | null>(null);
 
   // Recalculate metrics whenever inputs change
   const results = useMemo(() => calculateDeal(inputs), [inputs]);
 
   const handleSelectPreset = (presetInputs: DealInputs) => {
     setInputs(presetInputs);
-    showToast('Loaded scenario preset successfully');
+    showToast('Loaded scenario preset successfully', false);
   };
 
   const handleReset = () => {
     setInputs(BLANK_DEAL);
-    showToast('All fields cleared');
+    showToast('All fields cleared', false);
   };
 
   const handlePrint = () => {
     window.print();
   };
 
-  const showToast = (message: string) => {
-    setNotification(message);
+  const showToast = (message: string, isError: boolean = false) => {
+    setNotification({ message, isError });
     setTimeout(() => {
       setNotification(null);
-    }, 2500);
+    }, 3500);
   };
 
   const scrollToPitch = () => {
@@ -92,9 +92,19 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 border border-slate-700 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-semibold animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <Check className="w-4 h-4 text-emerald-400" />
-          <span>{notification}</span>
+        <div
+          className={`fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-semibold animate-in fade-in slide-in-from-bottom-3 duration-200 border ${
+            notification.isError
+              ? 'bg-rose-950/95 border-rose-600/80 text-rose-100'
+              : 'bg-slate-900 border-slate-700 text-white'
+          }`}
+        >
+          {notification.isError ? (
+            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+          ) : (
+            <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+          )}
+          <span>{notification.message}</span>
         </div>
       )}
 
@@ -140,6 +150,7 @@ export default function App() {
               inputs={inputs}
               onChange={setInputs}
               onGeneratePitch={scrollToPitch}
+              onToast={showToast}
             />
           </div>
 
@@ -165,7 +176,7 @@ export default function App() {
           </div>
           <button
             onClick={() => setIsGuideOpen(true)}
-            className="text-blue-400 hover:text-blue-300 font-medium whitespace-nowrap flex items-center gap-1 shrink-0"
+            className="text-blue-400 hover:text-blue-300 font-medium whitespace-nowrap flex items-center gap-1 shrink-0 cursor-pointer"
           >
             <HelpCircle className="w-3.5 h-3.5" />
             View Strategy Guide
