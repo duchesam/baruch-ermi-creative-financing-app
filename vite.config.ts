@@ -3,10 +3,9 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
-export default defineConfig(() => {
-  return {
-    plugins: [react(), tailwindcss()],
-    resolve: {
+export default defineConfig({
+  base: '/baruch-ermi-creative-financing-app/',
+  plugins: [react(), tailwindcss()],
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
