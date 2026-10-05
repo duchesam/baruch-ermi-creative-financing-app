@@ -1,0 +1,6 @@
+{
+  "name": "Baruch-Ermi LLC - Creative Financing Offer Generator",
+  "description": "Analyze Subject-To and Seller Financing real estate opportunities, calculate cash flow, entry fees, and generate executive offer pitches.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
