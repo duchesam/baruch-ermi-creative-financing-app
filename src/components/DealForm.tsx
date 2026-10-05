@@ -18,7 +18,7 @@ const RENTCAST_API_KEY = 'ae16b2b43f0c4c80a8ce7ad17ea15d3a';
 
 interface DealFormProps {
   inputs: DealInputs;
-  onChange: (inputs: DealInputs) => void;
+  onChange: React.Dispatch<React.SetStateAction<DealInputs>>;
   onGeneratePitch: () => void;
   onToast?: (message: string, isError?: boolean) => void;
 }
@@ -35,10 +35,10 @@ export const DealForm: React.FC<DealFormProps> = ({
   const [apiDetailMsg, setApiDetailMsg] = useState<string | null>(null);
 
   const handleInputChange = (field: keyof DealInputs, value: string | number) => {
-    onChange({
-      ...inputs,
+    onChange((prev) => ({
+      ...prev,
       [field]: value,
-    });
+    }));
   };
 
   const handleNumericChange = (field: keyof DealInputs, rawValue: string) => {
@@ -48,8 +48,10 @@ export const DealForm: React.FC<DealFormProps> = ({
   };
 
   const setDownPaymentPercent = (pct: number) => {
-    const calculated = Math.round((inputs.purchasePrice * pct) / 100);
-    handleInputChange('proposedDownPayment', calculated);
+    onChange((prev) => ({
+      ...prev,
+      proposedDownPayment: Math.round((prev.purchasePrice * pct) / 100),
+    }));
   };
 
   const handleFetchPropertyData = async () => {
@@ -130,14 +132,21 @@ export const DealForm: React.FC<DealFormProps> = ({
 
       // Check if we successfully got any metrics
       if (rentEstimate !== null || arvEstimate !== null) {
-        const updated = { ...inputs };
-        if (rentEstimate !== null) {
-          updated.monthlyMarketRent = Math.round(rentEstimate);
-        }
-        if (arvEstimate !== null) {
-          updated.estimatedARV = Math.round(arvEstimate);
-        }
-        onChange(updated);
+        onChange((prev) => {
+          const updated = { ...prev };
+          if (arvEstimate !== null) {
+            const roundedARV = Math.round(arvEstimate);
+            // Field #3 (ESTIMATED ARV) = returned valuation
+            updated.estimatedARV = roundedARV;
+            // Field #2 (PURCHASE PRICE) = set default to 90% of estimated ARV
+            updated.purchasePrice = Math.round(roundedARV * 0.9);
+          }
+          if (rentEstimate !== null) {
+            // Field #9 (ESTIMATED MONTHLY MARKET RENT) = returned rent estimate
+            updated.monthlyMarketRent = Math.round(rentEstimate);
+          }
+          return updated;
+        });
         onToast?.('Property data loaded successfully!', false);
       } else {
         const mainError = 'Address details not found. Please enter deal metrics manually.';
