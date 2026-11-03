@@ -121,6 +121,14 @@ export default function App() {
 
       {/* Main Application Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 no-print">
+        <nav aria-label="Baruch-Ermi workspace" className="flex flex-wrap items-center gap-4 text-sm text-blue-300">
+          <a href="https://baruch-ermi.org/team-portal" className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2">Team Portal</a>
+          <a href="https://baruch-ermi.org/" className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2">Company website</a>
+          <a href="https://baruch-ermi-lead-desk.barokermi.chatgpt.site/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2">Lead Desk (new tab)</a>
+        </nav>
+        <aside aria-label="Scenario data notice" className="rounded-xl border border-slate-700 bg-slate-900 p-4 text-sm text-slate-300">
+          The starting scenario and presets contain example property and contact details. Verify every field before using a deal summary or offer. Calculations are estimates based on your inputs.
+        </aside>
         {/* Sub-Header / Strategy Presets Banner on Mobile */}
         <div className="lg:hidden flex items-center justify-between bg-slate-900/90 border border-slate-800 p-3 rounded-xl">
           <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
@@ -202,3 +210,4 @@ export default function App() {
     </div>
   );
 }
+
